@@ -89,9 +89,7 @@ class MegaApplication : public QApplication, public mega::MegaListener
 {
     Q_OBJECT
 
-#ifdef Q_OS_LINUX
     void setTrayIconFromTheme(QString icon);
-#endif
 
 public:
 

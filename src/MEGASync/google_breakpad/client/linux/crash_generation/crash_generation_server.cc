@@ -388,12 +388,6 @@ CrashGenerationServer::ClientEvent(short revents)
   if (!MakeMinidumpFilename(minidump_filename))
     return true;
 
-  if (!google_breakpad::WriteMinidump(minidump_filename.c_str(),
-                                      crashing_pid, crash_context,
-                                      kCrashContextSize)) {
-    close(signal_fd);
-    return true;
-  }
 
   if (dump_callback_) {
     ClientInfo info(crashing_pid, this);

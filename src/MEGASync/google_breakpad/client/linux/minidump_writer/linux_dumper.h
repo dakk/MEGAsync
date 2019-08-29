@@ -39,7 +39,7 @@
 #define CLIENT_LINUX_MINIDUMP_WRITER_LINUX_DUMPER_H_
 
 #include <elf.h>
-#include <linux/limits.h>
+#include <sys/limits.h>
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/user.h>
@@ -57,18 +57,7 @@
 
 namespace google_breakpad {
 
-#if defined(__i386) || defined(__x86_64)
-typedef TYPEOF(((struct user*) 0)->u_debugreg[0]) debugreg_t;
-#endif
 
-// Typedef for our parsing of the auxv variables in /proc/pid/auxv.
-#if defined(__i386) || defined(__ARM_EABI__) || defined(__mips__)
-typedef Elf32_auxv_t elf_aux_entry;
-#elif defined(__x86_64)
-typedef Elf64_auxv_t elf_aux_entry;
-#endif
-
-typedef TYPEOF(((elf_aux_entry*) 0)->a_un.a_val) elf_aux_val_t;
 
 // When we find the VDSO mapping in the process's address space, this
 // is the name we use for it when writing it to the minidump.
@@ -83,26 +72,6 @@ struct ThreadInfo {
   uintptr_t stack_pointer;  // thread stack pointer
 
 
-#if defined(__i386) || defined(__x86_64)
-  user_regs_struct regs;
-  user_fpregs_struct fpregs;
-  static const unsigned kNumDebugRegisters = 8;
-  debugreg_t dregs[8];
-#if defined(__i386)
-  user_fpxregs_struct fpxregs;
-#endif  // defined(__i386)
-
-#elif defined(__ARM_EABI__)
-  // Mimicking how strace does this(see syscall.c, search for GETREGS)
-  struct user_regs regs;
-  struct user_fpregs fpregs;
-#elif defined(__mips__)
-  user_regs_struct regs;
-  user_fpregs_struct fpregs;
-  uint32_t hi[3];
-  uint32_t lo[3];
-  uint32_t dsp_control;
-#endif
 };
 
 // One of these is produced for each mapping in the process (i.e. line in
@@ -138,7 +107,6 @@ class LinuxDumper {
   const wasteful_vector<pid_t> &threads() { return threads_; }
   const wasteful_vector<MappingInfo*> &mappings() { return mappings_; }
   const MappingInfo* FindMapping(const void* address) const;
-  const wasteful_vector<elf_aux_val_t>& auxv() { return auxv_; }
 
   // Find a block of memory to take as the stack given the top of stack pointer.
   //   stack: (output) the lowest address in the memory area
@@ -216,9 +184,9 @@ class LinuxDumper {
   wasteful_vector<MappingInfo*> mappings_;
 
   // Info from /proc/<pid>/auxv
-  wasteful_vector<elf_aux_val_t> auxv_;
 };
 
 }  // namespace google_breakpad
 
-#endif  // CLIENT_LINUX_HANDLER_LINUX_DUMPER_H_
+
+#endif

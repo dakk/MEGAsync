@@ -54,7 +54,7 @@ public:
   // Parse a sysfs file to extract the corresponding CPU set.
   bool ParseSysFile(int fd) {
     char buffer[512];
-    int ret = sys_read(fd, buffer, sizeof(buffer)-1);
+    int ret = read(fd, buffer, sizeof(buffer)-1);
     if (ret < 0)
       return false;
 

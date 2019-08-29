@@ -111,7 +111,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#include <linux/unistd.h>
+#include <sys/unistd.h>
 #include <endian.h>
 
 #ifdef __mips__

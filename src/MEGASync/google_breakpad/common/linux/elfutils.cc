@@ -112,10 +112,7 @@ bool IsValidElf(const void* elf_base) {
 }
 
 int ElfClass(const void* elf_base) {
-  const ElfW(Ehdr)* elf_header =
-    reinterpret_cast<const ElfW(Ehdr)*>(elf_base);
-
-  return elf_header->e_ident[EI_CLASS];
+  return 0;
 }
 
 bool FindElfSection(const void *elf_mapped_base,

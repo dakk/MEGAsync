@@ -41,7 +41,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <sys/prctl.h>
 #include <sys/poll.h>
 #include <sys/stat.h>
 #include <sys/types.h>

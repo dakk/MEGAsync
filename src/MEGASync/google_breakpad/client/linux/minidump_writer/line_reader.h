@@ -95,7 +95,7 @@ class LineReader {
       }
 
       // Otherwise, we should pull in more data from the file
-      const ssize_t n = sys_read(fd_, buf_ + buf_used_,
+      const ssize_t n = read(fd_, buf_ + buf_used_,
                                  sizeof(buf_) - buf_used_);
       if (n < 0) {
         return false;

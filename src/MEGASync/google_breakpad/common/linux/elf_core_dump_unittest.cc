@@ -44,7 +44,6 @@
 using google_breakpad::AutoTempDir;
 using google_breakpad::CrashGenerator;
 using google_breakpad::ElfCoreDump;
-using google_breakpad::MemoryMappedFile;
 using google_breakpad::MemoryRange;
 using google_breakpad::WriteFile;
 using std::set;
@@ -57,74 +56,6 @@ TEST(ElfCoreDumpTest, DefaultConstructor) {
   EXPECT_EQ(NULL, core.GetProgramHeader(0));
   EXPECT_EQ(NULL, core.GetFirstProgramHeaderOfType(PT_LOAD));
   EXPECT_FALSE(core.GetFirstNote().IsValid());
-}
-
-TEST(ElfCoreDumpTest, TestElfHeader) {
-  ElfCoreDump::Ehdr header;
-  memset(&header, 0, sizeof(header));
-
-  AutoTempDir temp_dir;
-  string core_path = temp_dir.path() + "/core";
-  const char* core_file = core_path.c_str();
-  MemoryMappedFile mapped_core_file;
-  ElfCoreDump core;
-
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header) - 1));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-  EXPECT_EQ(NULL, core.GetHeader());
-  EXPECT_EQ(0U, core.GetProgramHeaderCount());
-  EXPECT_EQ(NULL, core.GetProgramHeader(0));
-  EXPECT_EQ(NULL, core.GetFirstProgramHeaderOfType(PT_LOAD));
-  EXPECT_FALSE(core.GetFirstNote().IsValid());
-
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_ident[0] = ELFMAG0;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_ident[1] = ELFMAG1;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_ident[2] = ELFMAG2;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_ident[3] = ELFMAG3;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_ident[4] = ElfCoreDump::kClass;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_version = EV_CURRENT;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_FALSE(core.IsValid());
-
-  header.e_type = ET_CORE;
-  ASSERT_TRUE(WriteFile(core_file, &header, sizeof(header)));
-  ASSERT_TRUE(mapped_core_file.Map(core_file));
-  core.SetContent(mapped_core_file.content());
-  EXPECT_TRUE(core.IsValid());
 }
 
 TEST(ElfCoreDumpTest, ValidCoreFile) {
@@ -151,9 +82,6 @@ TEST(ElfCoreDumpTest, ValidCoreFile) {
   for (unsigned i = 0; i < kNumOfThreads; ++i) {
     expected_thread_ids.insert(crash_generator.GetThreadId(i));
   }
-
-  MemoryMappedFile mapped_core_file;
-  ASSERT_TRUE(mapped_core_file.Map(crash_generator.GetCoreFilePath().c_str()));
 
   ElfCoreDump core;
   core.SetContent(mapped_core_file.content());

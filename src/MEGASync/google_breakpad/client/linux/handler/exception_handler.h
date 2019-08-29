@@ -194,7 +194,6 @@ class ExceptionHandler {
     // #ifdef this out because FP state is not part of user ABI for Linux ARM.
     // In case of MIPS Linux FP state is already part of struct ucontext
     // so 'float_state' is not required.
-    struct _libc_fpstate float_state;
 #endif
   };
 

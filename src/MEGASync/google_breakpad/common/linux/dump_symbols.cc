@@ -777,12 +777,7 @@ bool ReadSymbolDataElfClass(const typename ElfClass::Ehdr* elf_header,
   *out_module = NULL;
 
   unsigned char identifier[16];
-  if (!google_breakpad::FileID::ElfFileIdentifierFromMappedFile(elf_header,
-                                                                identifier)) {
-    fprintf(stderr, "%s: unable to generate file identifier\n",
-            obj_filename.c_str());
     return false;
-  }
 
   const char *architecture = ElfArchitecture<ElfClass>(elf_header);
   if (!architecture) {
